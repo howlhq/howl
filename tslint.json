@@ -1,0 +1,35 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-react",
+    "tslint-config-prettier",
+    "tslint-plugin-prettier",
+    "tslint-config-airbnb"
+  ],
+  "defaultSeverity": "error",
+  "rules": {
+    "import-name": false,
+    "jsx-no-lambda": false,
+    "max-line-length": [true, 120],
+    "max-classes-per-file": false,
+    "no-implicit-dependencies": [true, "dev", ["assets", "components", "graphql", "pages", "styles", "utils"]],
+    "no-submodule-imports": false,
+    "no-var-requires": false,
+    "prefer-array-literal": false,
+    "prettier": {
+      "options": {
+        "bracketSpacing": true,
+        "jsxBracketSameLine": false,
+        "printWidth": 120,
+        "trailingComma": "all"
+      }
+    },
+    "quotemark": [true, "double", "jsx-double"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "variable-name": [false]
+  },
+  "jsRules": {
+    "object-literal-sort-keys": true,
+    "trailing-comma": true
+  }
+}
