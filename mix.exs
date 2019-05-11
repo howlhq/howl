@@ -20,7 +20,7 @@ defmodule Howl.MixProject do
   def application do
     [
       mod: {Howl.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :confex]
     ]
   end
 
@@ -33,6 +33,9 @@ defmodule Howl.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:distillery, "~> 2.0"},
+      {:confex_config_provider, "~> 0.1.0"},
+      {:confex, "~> 3.4.0"},
       {:phoenix, "~> 1.4.5"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_ecto, "~> 4.0"},

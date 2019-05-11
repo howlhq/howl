@@ -11,7 +11,7 @@
       <%= render @view_module, @view_template, assigns %>
     </main>
     <%= if Mix.env == :dev do %>
-    <script type="text/javascript" src="https://localhost:4001/js/app.js"></script>
+    <script type="text/javascript" src="//localhost:4001/js/app.js"></script>
     <% else %>
     <script type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
     <% end %>

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -euo pipefail
+
+APP_NAME=${APP_NAME:-`grep 'app:' mix.exs | sed -e 's/\[//g' -e 's/ //g' -e 's/app://' -e 's/[:,]//g'`}
+APP_VSN=${APP_VSN:-"snapshot"}
+
+docker build --build-arg APP_NAME=${APP_NAME} \
+  --build-arg APP_VSN=${APP_VSN} \
+  -t gcr.io/howlhq/howl/${APP_NAME}:${APP_VSN} -f docker/Dockerfile.prod .

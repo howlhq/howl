@@ -2,10 +2,10 @@ use Mix.Config
 
 # Configure your database
 config :howl, Howl.Repo,
-  username: System.get_env("USER"),
-  password: "password",
-  database: "howl_dev",
-  hostname: "localhost",
+  username: {:system, "DATABASE_USER", "howl"},
+  password: {:system, "DATABASE_PASSWORD", "howl"},
+  database: {:system, "DATABASE_NAME", "howl_dev"},
+  hostname: {:system, "DATABASE_HOST", "postgres"},
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -16,11 +16,8 @@ config :howl, Howl.Repo,
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :howl, HowlWeb.Endpoint,
-  https: [
-    port: 4000,
-    cipher_suite: :strong,
-    keyfile: "priv/cert/selfsigned_key.pem",
-    certfile: "priv/cert/selfsigned.pem"
+  http: [
+    port: 4000
   ],
   debug_errors: true,
   code_reloader: true,

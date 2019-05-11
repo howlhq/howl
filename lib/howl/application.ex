@@ -6,6 +6,12 @@ defmodule Howl.Application do
   use Application
 
   def start(_type, _args) do
+    Confex.resolve_env!(:howl)
+
+    unless ConfexConfigProvider.release_mode?() do
+      ConfexConfigProvider.configure_applications()
+    end
+
     # List all child processes to be supervised
     children = [
       # Start the Ecto repository

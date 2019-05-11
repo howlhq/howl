@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -euo pipefail
+
+docker push gcr.io/howlhq/howl:$CIRCLE_SHA1 .

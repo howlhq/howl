@@ -1,0 +1,159 @@
+version: 2.1
+
+executors:
+  docker:
+    docker:
+      - image: docker:18.06.3-ce
+  web:
+    docker:
+      - image: node:8.10.0
+  cypress:
+    docker:
+      - image: cypress/base:10
+  server:
+    docker:
+      - image: circleci/elixir:1.8.1
+        environment:
+          MIX_ENV: test
+          TEST_RESULTS: /tmp/test-results.xml
+          DATABASE_HOST: postgres
+          DATABASE_USER: howl
+          DATABASE_PASSWORD: howl
+          DATABASE_NAME: howl_test
+      - image: postgres:11-alpine
+        environment:
+          POSTGRES_DB: howl_test
+          POSTGRES_USER: howl
+          POSTGRES_PASSWORD: howl
+
+jobs:
+  build:
+    executor: docker
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build Docker image
+          command: APP_VSN=$CIRCLE_SHA1 script/build
+      - run:
+          name: Push Docker image
+          command: script/push
+
+  test_server:
+    executor: server
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-test-mix-{{ .Branch}}-{{ checksum "mix.lock" }}
+            - v1-test-mix-{{ .Branch}}
+            - v1-test-mix
+      - run:
+          name: Install Mix Dependencies
+          command: mix deps.get && mix deps.compile
+      - run:
+          name: Run Mix Tests
+          command: mix test
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix-{{ .Branch }}-{{ checksum "mix.lock" }}
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix-{{ .Branch }}
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - store_test_results:
+          path: /tmp/test-results.xml
+
+  test_typescript:
+    executor: test_elixir
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-test-mix-{{ .Branch}}-{{ checksum "mix.lock" }}
+            - v1-test-mix-{{ .Branch}}
+            - v1-test-mix
+      - run:
+          name: Install Mix Dependencies
+          command: mix deps.get && mix deps.compile
+      - run:
+          name: Run Mix Tests
+          command: mix test
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix-{{ .Branch }}-{{ checksum "mix.lock" }}
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix-{{ .Branch }}
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - save_cache:  # generate and store mix cache
+          key: v1-test-mix
+          paths:
+            - "deps"
+            - "_build"
+            - "~/.mix"
+      - store_test_results:
+          path: /tmp/test-results.xml
+  lint_elixir:
+  lint_typescript:
+  deploy_preview:
+  deploy_staging:
+
+workflow:
+  cicd:
+    steps:
+      - build:
+          context: build
+      - test_server:
+          context: test
+      - test_web:
+          context: test
+      - lint_server
+      - lint_web
+      - deploy_preview:
+          context: preview
+          requires:
+            - build
+      - e2e_preview:
+          requires:
+            - deploy_preview
+      - deploy_staging:
+          context: staging
+          requires:
+            - build
+            - test_elixir
+            - test_typescript
+          filters:
+            branches:
+              only: master
+      - e2e_staging:
+          requires:
+            - deploy_staging
+          filters:
+            branches:
+              only: master
+      - deploy_production:
+          requires:
+            - build
+            - test_elixir
+            - test_typescript
+          filters:
+            branches:
+              only: master

@@ -1,0 +1,4 @@
+FROM elixir:1.8.1-alpine
+
+RUN apk add yarn inotify-tools && \
+  mix local.hex --force

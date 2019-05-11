@@ -1,6 +1,22 @@
+_build/
+deps/
+.git/
+test/
+priv/static/
 cypress/
+stories/
 node_modules/
 dist/
+script/
 
 Dockerfile
 *.log
+.formatter.exs
+.editorconfig
+.dockerignore
+.gitignore
+README*
+jest.config.js
+.prettierrc
+.prettierignore
+cypress.json

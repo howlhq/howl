@@ -1,6 +1,16 @@
 defmodule HowlWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :howl
 
+  def init(_type, config) do
+    {:ok, config} = Confex.Resolver.resolve(config)
+
+    unless config[:secret_key_base] do
+      raise "Application secret key not configured!"
+    end
+
+    {:ok, config}
+  end
+
   socket "/socket", HowlWeb.UserSocket,
     websocket: true,
     longpoll: false

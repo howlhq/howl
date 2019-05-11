@@ -1,15 +1,13 @@
-const fs = require("fs");
 const { resolve } = require("path");
 
-const HTMLWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const webpack = require("webpack");
 const merge = require("webpack-merge");
 
 const port = 4001;
+const host = `http://localhost:${port}/`;
 
 const paths = {
-  dist: resolve(__dirname, "dist"),
+  dist: resolve(__dirname, "priv/static"),
   src: resolve(__dirname, "web"),
 };
 
@@ -64,20 +62,16 @@ const dev = {
       "Access-Control-Allow-Credentials": "true",
     },
     hot: true,
-    https: {
-      key: fs.readFileSync(resolve(__dirname, "priv/cert/selfsigned_key.pem")),
-      cert: fs.readFileSync(resolve(__dirname, "priv/cert/selfsigned.pem")),
-    },
     inline: true,
     port,
-    publicPath: `https://localhost:${port}/`,
+    publicPath: host,
     // quiet: true,
   },
   mode: "development",
   output: {
     filename: "js/app.js",
     path: paths.dist,
-    publicPath: `https://localhost:${port}/`,
+    publicPath: host,
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
